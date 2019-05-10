@@ -107,6 +107,12 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        externalNativeBuild {
+            ndkBuild {
+                arguments "APP_PLATFORM=android-16"
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
+        }
     }
     splits {
         abi {
@@ -122,6 +128,17 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
+    sourceSets.main {
+        jniLibs.srcDir 'libs'
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path 'jni/Android.mk'
+        }
+    }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
