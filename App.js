@@ -7,23 +7,33 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+import {StyleSheet, Text, View, Button} from 'react-native';
+import SDLView from './sdl-view';
 
 type Props = {};
 export default class App extends Component<Props> {
+
+  state = {
+    showView: false
+  };
+
+  onButtonPress = () => {
+    this.setState({
+      showView: true
+    });
+  };
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <Text style={styles.instructions}>Here SDL view will be shown:</Text>
+        <View style={styles.sdlPlaceHolder}>
+          {this.state.showView && <SDLView style={styles.sdl} />}
+        </View>
+
+        <Button onPress={this.onButtonPress} title="Show SDL view" />
+
       </View>
     );
   }
@@ -41,6 +51,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
+
+  sdlPlaceHolder: {
+    width: 250,
+    height: 250,
+  },
+
+  sdl: {
+    width: 250,
+    height: 250,
+  },
+
   instructions: {
     textAlign: 'center',
     color: '#333333',
