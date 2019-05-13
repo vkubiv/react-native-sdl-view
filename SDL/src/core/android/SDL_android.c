@@ -56,7 +56,7 @@
 #define SDL_JAVA_PREFIX                                 org_libsdl_app
 #define CONCAT1(prefix, class, function)                CONCAT2(prefix, class, function)
 #define CONCAT2(prefix, class, function)                Java_ ## prefix ## _ ## class ## _ ## function
-#define SDL_JAVA_INTERFACE(function)                    CONCAT1(SDL_JAVA_PREFIX, SDLActivity, function)
+#define SDL_JAVA_INTERFACE(function)                    CONCAT1(SDL_JAVA_PREFIX, SDLBridge, function)
 #define SDL_JAVA_AUDIO_INTERFACE(function)              CONCAT1(SDL_JAVA_PREFIX, SDLAudioManager, function)
 #define SDL_JAVA_CONTROLLER_INTERFACE(function)         CONCAT1(SDL_JAVA_PREFIX, SDLControllerManager, function)
 #define SDL_JAVA_INTERFACE_INPUT_CONNECTION(function)   CONCAT1(SDL_JAVA_PREFIX, SDLInputConnection, function)
@@ -73,6 +73,11 @@ JNIEXPORT void JNICALL SDL_JAVA_INTERFACE(nativeSetupJNI)(
 JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeRunMain)(
         JNIEnv* env, jclass cls,
         jstring library, jstring function, jobject array);
+
+JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeRunCommand)(
+        JNIEnv* env, jclass cls,
+        jstring library, jstring function, int value);
+
 
 JNIEXPORT void JNICALL SDL_JAVA_INTERFACE(onNativeDropFile)(
         JNIEnv* env, jclass jcls,
@@ -308,7 +313,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 
 void checkJNIReady()
 {
-    if (!mActivityClass || !mAudioManagerClass || !mControllerManagerClass) {
+    if (!mActivityClass) {
         // We aren't fully initialized, let's just return.
         return;
     }
@@ -536,6 +541,43 @@ JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeRunMain)(JNIEnv* env, jclass cls,
 
     return status;
 }
+
+typedef int (*SDL_command_func)(int value);
+
+JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeRunCommand)(
+        JNIEnv* env, jclass cls,
+        jstring library, jstring function, int value) {
+    int status = -1;
+    const char *library_file;
+    void *library_handle;
+
+    __android_log_print(ANDROID_LOG_VERBOSE, "SDL", "nativeRunCommand()");
+
+    library_file = (*env)->GetStringUTFChars(env, library, NULL);
+    library_handle = dlopen(library_file, RTLD_GLOBAL);
+    if (library_handle) {
+        const char *function_name;
+        SDL_command_func SDL_send_command;
+
+        function_name = (*env)->GetStringUTFChars(env, function, NULL);
+        SDL_send_command = (SDL_command_func)dlsym(library_handle, function_name);
+        if (SDL_send_command) {
+            SDL_send_command(value);
+        } else {
+            __android_log_print(ANDROID_LOG_ERROR, "SDL", "nativeRunCommand(): Couldn't find function %s in library %s", function_name, library_file);
+        }
+        (*env)->ReleaseStringUTFChars(env, function, function_name);
+
+        dlclose(library_handle);
+
+    } else {
+        __android_log_print(ANDROID_LOG_ERROR, "SDL", "nativeRunCommand(): Couldn't load library %s", library_file);
+    }
+    (*env)->ReleaseStringUTFChars(env, library, library_file);
+
+
+}
+
 
 /* Drop file */
 JNIEXPORT void JNICALL SDL_JAVA_INTERFACE(onNativeDropFile)(

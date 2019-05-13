@@ -1,17 +1,19 @@
 package com.pocnware;
 
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 
-
+import org.libsdl.app.SDLBridge;
+import org.libsdl.app.SDLSurface;
 
 public class ReactSDLViewManager  extends SimpleViewManager<View> {
 
   public static final String REACT_CLASS = "SDLView";
+
+  private View mComponentView;
 
   @Override
   public String getName() {
@@ -21,12 +23,17 @@ public class ReactSDLViewManager  extends SimpleViewManager<View> {
   @Override
   public View createViewInstance(ThemedReactContext context) {
 
-    RelativeLayout layout = new RelativeLayout(context);
-    Button button = new Button(context);
-    button.setText("This is dummy view!!! not a button :)");
-    layout.addView(button);
+    SDLBridge bridge = SDLBridge.getInstance();
 
-    return layout;
+    if (mComponentView == null) {
+      SDLSurface view = bridge.create(context);
+
+      RelativeLayout layout = new RelativeLayout(context);
+      layout.addView(view);
+
+      mComponentView = layout;
+    }
+    return mComponentView;
   }
 
 }

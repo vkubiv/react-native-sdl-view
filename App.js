@@ -32,7 +32,7 @@ export default class App extends Component<Props> {
           {this.state.showView && <SDLView style={styles.sdl} />}
         </View>
 
-        <Button onPress={this.onButtonPress} title="Show SDL view" />
+        <Button onPress={this.onButtonPress} title={!this.state.showView ? 'Show SDL view' : 'Hide SDL view'} />
 
       </View>
     );
