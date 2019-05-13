@@ -31,6 +31,7 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(LOCAL_PATH)/src/haptic/android/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/joystick/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/joystick/android/*.c) \
+	$(wildcard $(LOCAL_PATH)/src/joystick/dummy/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/joystick/hidapi/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/loadso/dlopen/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/power/*.c) \
@@ -38,6 +39,7 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(LOCAL_PATH)/src/filesystem/android/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/sensor/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/sensor/android/*.c) \
+	$(wildcard $(LOCAL_PATH)/src/sensor/dummy/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/render/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/render/*/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/stdlib/*.c) \

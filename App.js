@@ -19,7 +19,7 @@ export default class App extends Component<Props> {
 
   onButtonPress = () => {
     this.setState({
-      showView: true
+      showView: !this.state.showView
     });
   };
 
@@ -55,6 +55,8 @@ const styles = StyleSheet.create({
   sdlPlaceHolder: {
     width: 250,
     height: 250,
+    marginTop: 10,
+    marginBottom: 10,
   },
 
   sdl: {
