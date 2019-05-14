@@ -48,6 +48,9 @@ But also you need to run next command to build javascript sources
 ##### cpp-src 
 contains c++ sources of simple sdl program see demo.cpp
 
+#### App.js
+contains javascript code of simple React Native app 
+
 ##### android 
 Folder that contains android project
 
