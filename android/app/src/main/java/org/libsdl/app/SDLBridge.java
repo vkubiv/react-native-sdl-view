@@ -566,10 +566,17 @@ public class SDLBridge {
         SDLBridge.nativeRunCommand(library, function, value);
     }
 
+    public static void setTexturePath(String path) {
+        String library = SDLBridge.mSingleton.getMainSharedObject();
+        SDLBridge.nativeSetTexturePath(library, path);
+    }
+
     // C functions we call
     public static native int nativeSetupJNI();
     public static native int nativeRunMain(String library, String function, Object arguments);
     public static native int nativeRunCommand(String library, String function, int value);
+    public static native int nativeSetTexturePath(String library, String path);
+
     public static native void nativeLowMemory();
     public static native void nativeQuit();
     public static native void nativePause();

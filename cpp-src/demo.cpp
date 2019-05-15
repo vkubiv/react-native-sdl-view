@@ -1,5 +1,18 @@
 #include "SDL.h"
 
+const Uint32 CHANGE_TEXTURE_EVENT = SDL_USEREVENT + 1;
+
+extern C_LINKAGE SDLMAIN_DECLSPEC void SetTexturePath(const char * path) {
+
+    char * pathCopy = new char[strlen(path) + 1];
+    strcpy(pathCopy, path);
+
+    SDL_Event event;
+    SDL_zero(event);
+    event.type = CHANGE_TEXTURE_EVENT;
+    event.user.data1 = pathCopy;
+    SDL_PushEvent(&event);
+}
 
 int SDL_main(int argc, char* argv[]) {
 
@@ -14,32 +27,43 @@ int SDL_main(int argc, char* argv[]) {
                               0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     SDL_Renderer *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
+    SDL_Texture * texture = NULL;
 
-    SDL_Surface * image = SDL_LoadBMP("neil-googe-tiles.bmp");
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(sdlRenderer, image);
-
-    SDL_FreeSurface(image);
-
-
-    SDL_Event Event;
+    SDL_Event event;
 
     bool Running = true;
 
     SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 
 	while(Running) {
-		while(SDL_PollEvent(&Event) != 0) {
-			if(Event.type == SDL_QUIT) Running = false;
+		while(SDL_PollEvent(&event) != 0) {
+			if(event.type == SDL_QUIT) {
+                Running = false;
+            }
+			if (event.type == CHANGE_TEXTURE_EVENT) {
+			    if (texture) {
+                    SDL_DestroyTexture(texture);
+			    }
+			    char * path = static_cast<char *>(event.user.data1);
+                SDL_Surface * image = SDL_LoadBMP((path));
+                delete [] path;
+                texture = SDL_CreateTextureFromSurface(sdlRenderer, image);
+                SDL_FreeSurface(image);
+			}
 		}
 
-        SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
+		if (texture) {
+            SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
+        }
 
         SDL_RenderPresent(sdlRenderer);
 
 		SDL_Delay(1);
 	}
 
-	SDL_DestroyTexture(texture);
+	if (texture) {
+        SDL_DestroyTexture(texture);
+    }
 	SDL_DestroyRenderer(sdlRenderer);
 	SDL_DestroyWindow(sdlWindow);
 

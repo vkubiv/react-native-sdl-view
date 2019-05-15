@@ -78,6 +78,10 @@ JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeRunCommand)(
         JNIEnv* env, jclass cls,
         jstring library, jstring function, int value);
 
+JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeSetTexturePath)(
+        JNIEnv* env, jclass cls,
+        jstring library, jstring path);
+
 
 JNIEXPORT void JNICALL SDL_JAVA_INTERFACE(onNativeDropFile)(
         JNIEnv* env, jclass jcls,
@@ -577,6 +581,44 @@ JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeRunCommand)(
 
 
 }
+
+
+
+typedef int (*SDL_change_texture_func)(const char * path);
+
+JNIEXPORT int JNICALL SDL_JAVA_INTERFACE(nativeSetTexturePath)(
+        JNIEnv* env, jclass cls,
+        jstring library, jstring path) {
+    int status = -1;
+    const char *library_file;
+    void *library_handle;
+
+    __android_log_print(ANDROID_LOG_VERBOSE, "SDL", "nativeSetTexturePath()");
+
+    library_file = (*env)->GetStringUTFChars(env, library, NULL);
+    library_handle = dlopen(library_file, RTLD_GLOBAL);
+    if (library_handle) {
+
+        SDL_change_texture_func change_texture;
+        change_texture = (SDL_command_func)dlsym(library_handle, "SetTexturePath");
+        if (change_texture) {
+            const char * c_path = (*env)->GetStringUTFChars(env, path, NULL);
+            change_texture(c_path);
+            (*env)->ReleaseStringUTFChars(env, path, c_path);
+        } else {
+            __android_log_print(ANDROID_LOG_ERROR, "SDL", "nativeSetTexturePath(): Couldn't find function %s in library %s", "SetTexturePath", library_file);
+        }
+
+        dlclose(library_handle);
+
+    } else {
+        __android_log_print(ANDROID_LOG_ERROR, "SDL", "nativeSetTexturePath(): Couldn't load library %s", library_file);
+    }
+    (*env)->ReleaseStringUTFChars(env, library, library_file);
+
+
+}
+
 
 
 /* Drop file */

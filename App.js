@@ -14,12 +14,19 @@ type Props = {};
 export default class App extends Component<Props> {
 
   state = {
-    showView: false
+    showView: false,
+    textureSrc: 'texture2.bmp',
   };
 
-  onButtonPress = () => {
+  onShowViewPress = () => {
     this.setState({
       showView: !this.state.showView
+    });
+  };
+
+  onChangeTexturePress = () => {
+    this.setState({
+      textureSrc: 'texture1.bmp',
     });
   };
 
@@ -29,10 +36,13 @@ export default class App extends Component<Props> {
         <Text style={styles.welcome}>Welcome to React Native!</Text>
         <Text style={styles.instructions}>Here SDL view will be shown:</Text>
         <View style={styles.sdlPlaceHolder}>
-          {this.state.showView && <SDLView style={styles.sdl} />}
+          {this.state.showView && <SDLView style={styles.sdl} textureSrc={this.state.textureSrc} />}
         </View>
 
-        <Button onPress={this.onButtonPress} title={!this.state.showView ? 'Show SDL view' : 'Hide SDL view'} />
+        <Button onPress={this.onShowViewPress} title={!this.state.showView ? 'Show SDL view' : 'Hide SDL view'} />
+        <View style={styles.changeBtn}>
+          {this.state.showView && <Button  onPress={this.onChangeTexturePress} title={'Change texture'} /> }
+        </View>
 
       </View>
     );
@@ -62,6 +72,10 @@ const styles = StyleSheet.create({
   sdl: {
     width: 250,
     height: 250,
+  },
+
+  changeBtn: {
+    padding: 10,
   },
 
   instructions: {

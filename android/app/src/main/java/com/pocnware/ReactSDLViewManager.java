@@ -5,6 +5,7 @@ import android.widget.RelativeLayout;
 
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.libsdl.app.SDLBridge;
 import org.libsdl.app.SDLSurface;
@@ -34,6 +35,11 @@ public class ReactSDLViewManager  extends SimpleViewManager<View> {
       mComponentView = layout;
     }
     return mComponentView;
+  }
+
+  @ReactProp(name = "textureSrc", defaultBoolean = false)
+  public void showTexture(View view, String path) {
+    SDLBridge.setTexturePath(path);
   }
 
 }

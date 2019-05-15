@@ -35,7 +35,7 @@ there are two ways how to build and run project. you can do this from command li
 ```
 you should have connected phone or setuped android simulator
 
-##### Run from Android Studin
+##### Run from Android Studio
 
 you can find android directory in project directory and open it using Android Studio
 But also you need to run next command to build javascript sources
